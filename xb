@@ -7,41 +7,41 @@
 
 
 usage() {
-	echo \
+    echo \
 "Packages:
-	xb [ACTION] [OPTION] [PKGNAME...]
+    xb [ACTION] [OPTION] [PKGNAME...]
 
 Services:
-	xb [ACTION] [SERVICE]
+    xb [ACTION] [SERVICE]
 
 ACTIONS
 
-add|install [-s] <packages>	Install <packages>. Use -s to sync index.
-del|remove [-o] <packages>	Remove <packages>. Use -o to remove only given packages.
-search [-l] <text>		Search for package. Use -l to search only installed.
-update|upgrade			Update all packages.
-checkupd			Returns number of waiting updates.
-list				List all installed packeges.
-info				Show information about package.
-files				Show files in package.
-clean 				Remove orphans and clean cache.
-repoadd	<repository>		Add new <repository> (glibc only).
-repodel	<repository>		Remove installed <repository> (glibc only).
-repolist [-l]			List avaibile repos. Use -l to show installed repos.
+  add|install [-s]  Install <packages>. Use -s to sync index.
+  del|remove [-o]   Remove <packages>. Use -o to remove only given packages.
+  search [-l]       Search <text> for package. Use -l to search only installed.
+  update|upgrade    Update all packages.
+  checkupd          Returns number of waiting updates.
+  list              List all installed packeges.
+  info              Show information about package.
+  files             Show files in package.
+  clean             Remove orphans and clean cache.
+  repoadd           Add new <repository> (glibc only).
+  repodel           Remove installed <repository> (glibc only).
+  repolist [-l]     List avaibile repos. Use -l to show installed repos.
 
 FLATPAK
 
-fadd [-u] <package>		Install <package>(names like: vim, gimp,...). Use -u to install as user.
-fdel [-u] <package>		Remove <package>. Use -u to remove user package.
-fsearch <package>		Find package in remote repo or local metadata.
-fupgrade [-u]			Upgrade all packages and fetch local metadata. Use -u to upgrade users packages.
-flist [-i]			List remote packages. Use -i to list installed.
+  fadd [-u]         Install <package>(names like: vim, gimp,...). Use -u to install as user.
+  fdel [-u]         Remove <package>. Use -u to remove user package.
+  fsearch           Find <package> in remote repo or local metadata.
+  fupgrade [-u]     Upgrade all packages and fetch local metadata. Use -u to upgrade users packages.
+  flist [-i]        List remote packages. Use -i to list installed.
 
 SERVICES
 
-slist 		Show all services, enabled and disabled.
-son <service>	Enable and start service.
-soff <service>	Disable and stop service.
+  slist             Show all services, enabled and disabled.
+  son               Enable and start <service>.
+  soff              Disable and stop <service>.
 
 "
 }
@@ -49,140 +49,140 @@ soff <service>	Disable and stop service.
 add() {
         local OPTS="$@"
         local sync=""
-	local pk=""
+    local pk=""
         
         for a in $OPTS; do
                 case "$a" in
-		add|install|repoadd) ;;
+        add|install|repoadd) ;;
                 -s | --sync) sync="-S " ;;
                 -h | --help) usage;;
                 *) pk="$a $pk";;
                 esac
         done
-	
-	pk=$(echo "$pk" | xargs)
+    
+    pk=$(echo "$pk" | xargs)
 
-	#echo "xbps-install $sync$pk"
-	xbps-install $sync$pk
+    #echo "xbps-install $sync$pk"
+    xbps-install $sync$pk
 }
 
 del() {
         local OPTS="$@"
         local norec="-R "
-	local pk=""
+    local pk=""
         
         for a in $OPTS; do
                 case "$a" in
-		del|remove|repodel) ;;
+        del|remove|repodel) ;;
                 -o | --only) norec="" ;;
                 -h | --help) usage;;
                 *) pk="$a $pk";;
                 esac
         done
-	
-	pk=$(echo "$pk" | xargs)
+    
+    pk=$(echo "$pk" | xargs)
 
-	#echo "xbps-remove $norec$pk"
-	xbps-remove $norec$pk
+    #echo "xbps-remove $norec$pk"
+    xbps-remove $norec$pk
 }
 
 
 search() {
         local OPTS="$@"
         local remote="-R -s " 
-	local pk=""
+    local pk=""
         
         for a in $OPTS; do
                 case "$a" in
-		search|find|repolist) ;;
+        search|find|repolist) ;;
                 -l | --local) remote="-s " ;;
                 -h | --help) usage;;
                 *) pk="$a";;
                 esac
         done
-	
-	pk=$(echo "$pk" | xargs)
+    
+    pk=$(echo "$pk" | xargs)
 
-	xbps-query ${remote}$pk
+    xbps-query ${remote}$pk
 }
 
 upgrade() {
-	xbps-install -Su
+    xbps-install -Su
 }
 
 list() {
-	xbps-query -l
+    xbps-query -l
 }
 
 info() {
-	xbps-query -R "$1"
+    xbps-query -R "$1"
 }
 
 files() {
-	xbps-query -f "$1"
+    xbps-query -f "$1"
 }
 
 checkupd() {
-	xbps-install -S > /dev/null && xbps-install -un | wc -l
+    xbps-install -S > /dev/null && xbps-install -un | wc -l
 }
 
 clean() {
-	xbps-remove -oO
+    xbps-remove -oO
 }
 
 repolist() {
-	search "$@ void-repo"
+    search "$@ void-repo"
 }
 
 repoadd() {
-	add "$@"
-	xbps-install -S
+    add "$@"
+    xbps-install -S
 }
 
 repodel() {
-	del "$@"
-	xbps-install -S
+    del "$@"
+    xbps-install -S
 }
 
 # services
 
 son() {
-	local svcname="$1"
+    local svcname="$1"
 
-	[ -z "$svcname" ] && echo "Please enter service name. For example:\n  xb son dbus" && exit 1
+    [ -z "$svcname" ] && echo "Please enter service name. For example:\n  xb son dbus" && exit 1
 
-	ln -s /etc/sv/$svcname /var/service/ && echo "Service $svcname enabled."
+    ln -s /etc/sv/$svcname /var/service/ && echo "Service $svcname enabled."
 }
 
 soff() {
-	local svcname="$1"
+    local svcname="$1"
 
-	[ -z "$svcname" ] && echo "Please give service name. For example:\n  xb soff dbus" && exit 1
+    [ -z "$svcname" ] && echo "Please give service name. For example:\n  xb soff dbus" && exit 1
 
-	rm /var/service/$svcname && echo "Service $svcname disabled."
+    rm /var/service/$svcname && echo "Service $svcname disabled."
 }
 
 slist() {
-	enabled=$(ls /var/service/)
-	availabile=$(ls /etc/sv/)
-	local ten=""
-	local tdis=""
+    enabled=$(ls /var/service/)
+    availabile=$(ls /etc/sv/)
+    local ten=""
+    local tdis=""
 
-	for sv in $availabile; do
-		if [ -z "${enabled##*$sv*}" ] ;then
-			ten="$ten$sv\n" 
-			#echo "$sv \ton"
-		else
-			tdis="$tdis$sv\n"
-			#echo "$sv \toff"
-		fi
-	done
+    for sv in $availabile; do
+        if [ -z "${enabled##*$sv*}" ] ;then
+            ten="$ten$sv\n" 
+            #echo "$sv \ton"
+        else
+            tdis="$tdis$sv\n"
+            #echo "$sv \toff"
+        fi
+    done
 
-	echo "ENABLED:"
-	echo "$ten"
-	echo
-	echo "DISABLED:"
-	echo "$tdis"
+    echo "ENABLED:"
+    echo "$ten"
+    echo
+    echo "DISABLED:"
+    echo "$tdis"
 
 }
 
@@ -190,7 +190,7 @@ slist() {
 # flatpak functions
 
 _flist_enumerable_repos(){
-	flatpak remotes | grep -v no-enumerate | cut -f1
+    flatpak remotes | grep -v no-enumerate | cut -f1
 }
 
 # fall_apps will list all availabile flatpak apps
@@ -198,239 +198,239 @@ _flist_enumerable_repos(){
 # we need to find all repos without this flag and enumerate one by one ... yeah this sucks.
 # result is cached for 5 minutes. This will make autocompletion usable.
 fall_apps() {
-	local nocache="$1"
-	local cachef="/tmp/xb-apps.cache"
-	local expire=300 # 5 min
+    local nocache="$1"
+    local cachef="/tmp/xb-apps.cache"
+    local expire=300 # 5 min
 
-	if [ -z $nocache ] && [ -f "$cachef"  ] && [ $(expr $(date +%s) - $(date -r "$cachef" +%s)) -le $expire ]; then
-		# active cache
-		cat $cachef
-	else
-		echo > $cachef
-		local repos="$(_flist_enumerable_repos)"
-		for repo in $repos; do
-			for app in $(flatpak remote-ls $repo); do
-				echo "$repo $app" | tee -a $cachef
-			done
-		done
-	fi
+    if [ -z $nocache ] && [ -f "$cachef"  ] && [ $(expr $(date +%s) - $(date -r "$cachef" +%s)) -le $expire ]; then
+        # active cache
+        cat $cachef
+    else
+        echo > $cachef
+        local repos="$(_flist_enumerable_repos)"
+        for repo in $repos; do
+            for app in $(flatpak remote-ls $repo); do
+                echo "$repo $app" | tee -a $cachef
+            done
+        done
+    fi
 }
 
 # the same as fall_apps but returns lovercase, friendly names
 # we will cache it also
 fall_apps_simple() {
-	local cachef="/tmp/xb-appss.cache"
-	local expire=300 # 5 min
+    local cachef="/tmp/xb-appss.cache"
+    local expire=300 # 5 min
 
-	if [ -f "$cachef"  ] && [ $(expr $(date +%s) - $(date -r "$cachef" +%s)) -le $expire ]; then
-		# active cache
-		cat $cachef
-	else
-		echo > $cachef
-		apps="$(fall_apps "nocache" | sort -u)" #disable fullname caching
-		for app in "$apps"; do
-			echo "$app" | cut -d' ' -f2 | rev | cut -d'.' -f1,2| rev | tr '[:upper:]' '[:lower:]' | tee -a $cachef
-		done
-	fi
+    if [ -f "$cachef"  ] && [ $(expr $(date +%s) - $(date -r "$cachef" +%s)) -le $expire ]; then
+        # active cache
+        cat $cachef
+    else
+        echo > $cachef
+        apps="$(fall_apps "nocache" | sort -u)" #disable fullname caching
+        for app in "$apps"; do
+            echo "$app" | cut -d' ' -f2 | rev | cut -d'.' -f1,2| rev | tr '[:upper:]' '[:lower:]' | tee -a $cachef
+        done
+    fi
 }
 
 finstalled_apps_simple() {
-	local apps="$(flatpak list --app)"
+    local apps="$(flatpak list --app)"
 
-	for app in "$apps"; do
-		echo "$app" | cut -d' ' -f1 | rev | cut -d'.' -f1,2| rev | tr '[:upper:]' '[:lower:]' | cut -d'/' -f1
-	done
+    for app in "$apps"; do
+        echo "$app" | cut -d' ' -f1 | rev | cut -d'.' -f1,2| rev | tr '[:upper:]' '[:lower:]' | cut -d'/' -f1
+    done
 }
 
 #_swap_cols() {
-#	local line="$1"
-#	local repo="$(echo $line | xargs | cut -d' ' -f2)"
-#	local app="$(echo $line | xargs | cut -d' ' -f1)"
-#	echo "$repo $app"
+#   local line="$1"
+#   local repo="$(echo $line | xargs | cut -d' ' -f2)"
+#   local app="$(echo $line | xargs | cut -d' ' -f1)"
+#   echo "$repo $app"
 #}
 
 # determine if script is running with sudo, if so, switch back to invoker if desired
 _run_sudo() {
-	local command="$1"
-	local install_as_user="$2"
+    local command="$1"
+    local install_as_user="$2"
 
-	if [ ! -z "$install_as_user" -a "$(whoami)" != "$(logname)" ]; then
-		sudo -u $(logname) $command
-	else
-		$command
-	fi	
+    if [ ! -z "$install_as_user" -a "$(whoami)" != "$(logname)" ]; then
+        sudo -u $(logname) $command
+    else
+        $command
+    fi  
 }
 
 _mkrunner() {
-	local runpath="/usr/local/bin"
-	local appfullname="$1"
-	local appshortname=$(echo "$appfullname" | rev | cut -d'.' -f1,2| rev | tr '[:upper:]' '[:lower:]')
-	echo -e "#/bin/bash\nflatpak run $app" > $runpath/$appshortname && \
-		chmod +x $runpath/$appshortname && \
-		echo "To run '$appfullname' run: '$appshortname' (runner installed to '/usr/local/bin')"
+    local runpath="/usr/local/bin"
+    local appfullname="$1"
+    local appshortname=$(echo "$appfullname" | rev | cut -d'.' -f1,2| rev | tr '[:upper:]' '[:lower:]')
+    echo -e "#/bin/bash\nflatpak run $app" > $runpath/$appshortname && \
+        chmod +x $runpath/$appshortname && \
+        echo "To run '$appfullname' run: '$appshortname' (runner installed to '/usr/local/bin')"
 }
 
 frepo_and_name() {
-	local search="$1"
-	local apps="$(fall_apps)"
-	
-	echo "$apps" | grep -i \\.$search
+    local search="$1"
+    local apps="$(fall_apps)"
+    
+    echo "$apps" | grep -i \\.$search
 }
 
 fname() {
-	frepo_and_name "$1" | cut -d' ' -f2
+    frepo_and_name "$1" | cut -d' ' -f2
 }
 
 fsearch() {
-	local OPTS="$@"
-	local pk=""
+    local OPTS="$@"
+    local pk=""
         
         for a in $OPTS; do
                 case "$a" in
-			fsearch) ;;
-                	-h | --help) usage;;
-                	*) pk="$a";;
-		esac
-	done
-	
-	pk=$(echo "$pk" | xargs)
+            fsearch) ;;
+                    -h | --help) usage;;
+                    *) pk="$a";;
+        esac
+    done
+    
+    pk=$(echo "$pk" | xargs)
 
-	#alternative :
-	lapps="$(flatpak search "$pk")"
-	if [ "$lapps" = "No matches found" ]; then
-		lapps="$(frepo_and_name "$pk" "$(fall_apps)")"
-		if [ ! -z "$lapps" ]; then	
-			echo "INFO: No cache. Run 'fupgrade' for better search."
-		fi
-	fi
-	echo "$lapps"
+    #alternative :
+    lapps="$(flatpak search "$pk")"
+    if [ "$lapps" = "No matches found" ]; then
+        lapps="$(frepo_and_name "$pk" "$(fall_apps)")"
+        if [ ! -z "$lapps" ]; then  
+            echo "INFO: No cache. Run 'fupgrade' for better search."
+        fi
+    fi
+    echo "$lapps"
 }
 
 fadd() {
         local OPTS="$@"
         local user=""
-	local pk=""
+    local pk=""
         
         for a in $OPTS; do
                 case "$a" in
-		fadd) ;;
+        fadd) ;;
                 -u | --user) user="--user " ;;
                 -h | --help) usage;;
                 *) pk="$a $pk";;
                 esac
-	done
-	
-	pk=$(echo "$pk" | xargs)
+    done
+    
+    pk=$(echo "$pk" | xargs)
 
-	repo_and_app="$(frepo_and_name "$pk")"
-	app=$(echo "$repo_and_app" | cut -d' ' -f2)
-	_run_sudo "flatpak install $user$repo_and_app" $user && _mkrunner "$app"
+    repo_and_app="$(frepo_and_name "$pk")"
+    app=$(echo "$repo_and_app" | cut -d' ' -f2)
+    _run_sudo "flatpak install $user$repo_and_app" $user && _mkrunner "$app"
 }
 
 fdel() {
         local OPTS="$@"
         local user=""
-	local pk=""
+    local pk=""
         
         for a in $OPTS; do
                 case "$a" in
-			fdel) ;;
-                	-u | --user) user="--user " ;;
-                	-h | --help) usage;;
-                	*) pk="$a $pk";;
-		esac
+            fdel) ;;
+                    -u | --user) user="--user " ;;
+                    -h | --help) usage;;
+                    *) pk="$a $pk";;
+        esac
         done
-	
-	pk=$(echo "$pk" | xargs)
+    
+    pk=$(echo "$pk" | xargs)
 
-	_run_sudo "flatpak --force-remove uninstall $user$(fname "$pk")" $user
+    _run_sudo "flatpak --force-remove uninstall $user$(fname "$pk")" $user
 }
 
 fupgrade() {
-	local OPTS="$@"
+    local OPTS="$@"
         local user=""
-	local pk=""
+    local pk=""
         
         for a in $OPTS; do
                 case "$a" in
-			fupgrade) ;;
-                	-u | --user) user="--user " ;;
-                	*) usage;;
-		esac
+            fupgrade) ;;
+                    -u | --user) user="--user " ;;
+                    *) usage;;
+        esac
         done
 
-	_run_sudo "flatpak ${user}--force-remove update" $user
+    _run_sudo "flatpak ${user}--force-remove update" $user
 }
 
 finfo() {
-	flatpak remote-info $(frepo_and_name "$1")
+    flatpak remote-info $(frepo_and_name "$1")
 }
 
 flist() {
 
-	local OPTS="$@"
+    local OPTS="$@"
         local installed=""
-	local simple=""
-	local user=""
+    local simple=""
+    local user=""
         
         for a in $OPTS; do
                 case "$a" in
-			flist) ;;
-			-u | --user) user="--user ";;
-                	-i | --installed) installed="yes";;
-			-s | --simple) simple="yes";;
-                	*) usage;;
-		esac
-	done
-	
-	if [ -n "$installed" -a -z "$simple" ]; then
-		echo "flatpak ${user}list"
-		flatpak ${user}list
-	elif [ -n "$installed" -a -n "$simple" ]; then
-		finstalled_apps_simple
-	elif [ -z "$installed" -a -n "$simple" ]; then
-		fall_apps_simple
-	else
-		# can we make it bla bla...? if shortened?
-		#flatpak search . | cut -c1-$(stty size </dev/tty | cut -d' ' -f2)
-		fall_apps
-	fi
+            flist) ;;
+            -u | --user) user="--user ";;
+                    -i | --installed) installed="yes";;
+            -s | --simple) simple="yes";;
+                    *) usage;;
+        esac
+    done
+    
+    if [ -n "$installed" -a -z "$simple" ]; then
+        echo "flatpak ${user}list"
+        flatpak ${user}list
+    elif [ -n "$installed" -a -n "$simple" ]; then
+        finstalled_apps_simple
+    elif [ -z "$installed" -a -n "$simple" ]; then
+        fall_apps_simple
+    else
+        # can we make it bla bla...? if shortened?
+        #flatpak search . | cut -c1-$(stty size </dev/tty | cut -d' ' -f2)
+        fall_apps
+    fi
 }
 
 frepoadd() {
-	local OPTS="$@"
-	local repo=""
-	local user=""
+    local OPTS="$@"
+    local repo=""
+    local user=""
 
-	for a in $OPTS; do
-        	case "$a" in
-			frepoadd) ;;
-			-u|--user) user="--user ";;
-                	flathub) repo="flathub";;
-			*) echo "ERROR: Unknown repo '$a', currently availabile: flathub" ;;
-		esac
-	done
-	case "$repo" in
-		flathub) echo "Installing $repo ..."; flatpak remote-add ${user}--if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo ;;
-	esac
+    for a in $OPTS; do
+            case "$a" in
+            frepoadd) ;;
+            -u|--user) user="--user ";;
+                    flathub) repo="flathub";;
+            *) echo "ERROR: Unknown repo '$a', currently availabile: flathub" ;;
+        esac
+    done
+    case "$repo" in
+        flathub) echo "Installing $repo ..."; flatpak remote-add ${user}--if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo ;;
+    esac
 }
 
 frepodel() {
-	local OPTS="$@"
-	local repo=""
-	local user=""
+    local OPTS="$@"
+    local repo=""
+    local user=""
 
-	for a in $OPTS; do
-        	case "$a" in
-			frepoadd) ;;
-			-u|--user) user="--user ";;
-                	flathub) repo="flathub";;
-			*) echo "ERROR: Unknown repo '$a', currently availabile: flathub" ;;
-		esac
-	done
-	case "$repo" in
-		flathub) echo "Removing $repo ..."; flatpak remote-delete ${user}flathub ;;
-	esac
+    for a in $OPTS; do
+            case "$a" in
+            frepoadd) ;;
+            -u|--user) user="--user ";;
+                    flathub) repo="flathub";;
+            *) echo "ERROR: Unknown repo '$a', currently availabile: flathub" ;;
+        esac
+    done
+    case "$repo" in
+        flathub) echo "Removing $repo ..."; flatpak remote-delete ${user}flathub ;;
+    esac
 }
 
 # main
@@ -441,31 +441,31 @@ main_command="$1"
 all_commands="$@"
 
 case "$main_command" in
-	add|install) add "$all_commands";;
-	search|find) search "$all_commands";;
-	upgrade|update) upgrade;;
-	checkupd) checkupd ;;
-	show|info) info "$2";;
-	files) files "$2";;
-	del|remove) del "$all_commands";;
-	list) list;;
-	clean) clean;;
-	repoadd) repoadd "$all_commands";;
-	repodel) repodel "$all_commands";;
-	repolist) repolist "$all_commands";;
-	
-	son|senable) son "$2";;
-	soff|sdisable) soff "$2";;
-	slist) slist;;
+    add|install) add "$all_commands";;
+    search|find) search "$all_commands";;
+    upgrade|update) upgrade;;
+    checkupd) checkupd ;;
+    show|info) info "$2";;
+    files) files "$2";;
+    del|remove) del "$all_commands";;
+    list) list;;
+    clean) clean;;
+    repoadd) repoadd "$all_commands";;
+    repodel) repodel "$all_commands";;
+    repolist) repolist "$all_commands";;
+    
+    son|senable) son "$2";;
+    soff|sdisable) soff "$2";;
+    slist) slist;;
 
-	fsearch) fsearch "$all_commands";;	
-	fadd) fadd "$all_commands";;
-	fdel) fdel "$all_commands";;
-	fupgrade) fupgrade "$all_commands";;
-	finfo) finfo "$2";;
-	flist) flist "$all_commands";;
-	frepoadd) frepoadd "$all_commands";;
-	frepodel) frepodel "$all_commands";;
+    fsearch) fsearch "$all_commands";;  
+    fadd) fadd "$all_commands";;
+    fdel) fdel "$all_commands";;
+    fupgrade) fupgrade "$all_commands";;
+    finfo) finfo "$2";;
+    flist) flist "$all_commands";;
+    frepoadd) frepoadd "$all_commands";;
+    frepodel) frepodel "$all_commands";;
 
-	*) usage; exit 1;;
+    *) usage; exit 1;;
 esac
