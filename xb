@@ -9,13 +9,12 @@
 usage() {
     echo \
 "Packages:
-    xb [ACTION] [OPTION] [PKGNAME...]
+  xb [ACTION] [OPTION] [PKGNAME...]
 
 Services:
-    xb [ACTION] [SERVICE]
+  xb [ACTION] [SERVICE]
 
 ACTIONS
-
   add|install [-s]  Install <packages>. Use -s to sync index.
   del|remove [-o]   Remove <packages>. Use -o to remove only given packages.
   search [-l]       Search <text> for package. Use -l to search only installed.
@@ -30,35 +29,32 @@ ACTIONS
   repolist [-l]     List avaibile repos. Use -l to show installed repos.
 
 FLATPAK
-
-  fadd [-u]         Install <package>(names like: vim, gimp,...). Use -u to install as user.
+  fadd [-u]         Install <package>. Use -u to install as user.
   fdel [-u]         Remove <package>. Use -u to remove user package.
   fsearch           Find <package> in remote repo or local metadata.
   fupgrade [-u]     Upgrade all packages and fetch local metadata. Use -u to upgrade users packages.
   flist [-i]        List remote packages. Use -i to list installed.
 
 SERVICES
-
   slist             Show all services, enabled and disabled.
   son               Enable and start <service>.
   soff              Disable and stop <service>.
-
 "
 }
 
 add() {
-        local OPTS="$@"
-        local sync=""
+    local OPTS="$@"
+    local sync=""
     local pk=""
         
-        for a in $OPTS; do
-                case "$a" in
-        add|install|repoadd) ;;
-                -s | --sync) sync="-S " ;;
-                -h | --help) usage;;
-                *) pk="$a $pk";;
-                esac
-        done
+    for a in $OPTS; do
+        case "$a" in
+            add|install|repoadd) ;;
+            -s | --sync) sync="-S ";;
+            -h | --help) usage;;
+            *) pk="$a $pk";;
+        esac
+    done
     
     pk=$(echo "$pk" | xargs)
 
@@ -67,18 +63,18 @@ add() {
 }
 
 del() {
-        local OPTS="$@"
-        local norec="-R "
+    local OPTS="$@"
+    local norec="-R "
     local pk=""
         
-        for a in $OPTS; do
-                case "$a" in
-        del|remove|repodel) ;;
-                -o | --only) norec="" ;;
-                -h | --help) usage;;
-                *) pk="$a $pk";;
-                esac
-        done
+    for a in $OPTS; do
+        case "$a" in
+            del|remove|repodel) ;;
+            -o | --only) norec="";;
+            -h | --help) usage;;
+            *) pk="$a $pk";;
+        esac
+    done
     
     pk=$(echo "$pk" | xargs)
 
@@ -88,18 +84,18 @@ del() {
 
 
 search() {
-        local OPTS="$@"
-        local remote="-R -s " 
+    local OPTS="$@"
+    local remote="-R -s " 
     local pk=""
         
-        for a in $OPTS; do
-                case "$a" in
-        search|find|repolist) ;;
-                -l | --local) remote="-s " ;;
-                -h | --help) usage;;
-                *) pk="$a";;
-                esac
-        done
+    for a in $OPTS; do
+        case "$a" in
+            search|find|repolist) ;;
+            -l | --local) remote="-s ";;
+            -h | --help) usage;;
+            *) pk="$a";;
+        esac
+    done
     
     pk=$(echo "$pk" | xargs)
 
@@ -183,9 +179,7 @@ slist() {
     echo
     echo "DISABLED:"
     echo "$tdis"
-
 }
-
 
 # flatpak functions
 
@@ -285,11 +279,11 @@ fsearch() {
     local OPTS="$@"
     local pk=""
         
-        for a in $OPTS; do
-                case "$a" in
+    for a in $OPTS; do
+        case "$a" in
             fsearch) ;;
-                    -h | --help) usage;;
-                    *) pk="$a";;
+            -h | --help) usage;;
+            *) pk="$a";;
         esac
     done
     
@@ -307,17 +301,17 @@ fsearch() {
 }
 
 fadd() {
-        local OPTS="$@"
-        local user=""
+    local OPTS="$@"
+    local user=""
     local pk=""
         
-        for a in $OPTS; do
-                case "$a" in
-        fadd) ;;
-                -u | --user) user="--user " ;;
-                -h | --help) usage;;
-                *) pk="$a $pk";;
-                esac
+    for a in $OPTS; do
+        case "$a" in
+            fadd) ;;
+            -u | --user) user="--user ";;
+            -h | --help) usage;;
+            *) pk="$a $pk";;
+        esac
     done
     
     pk=$(echo "$pk" | xargs)
@@ -328,18 +322,18 @@ fadd() {
 }
 
 fdel() {
-        local OPTS="$@"
-        local user=""
+    local OPTS="$@"
+    local user=""
     local pk=""
         
-        for a in $OPTS; do
-                case "$a" in
+    for a in $OPTS; do
+        case "$a" in
             fdel) ;;
-                    -u | --user) user="--user " ;;
-                    -h | --help) usage;;
-                    *) pk="$a $pk";;
+            -u | --user) user="--user ";;
+            -h | --help) usage;;
+            *) pk="$a $pk";;
         esac
-        done
+    done
     
     pk=$(echo "$pk" | xargs)
 
@@ -348,16 +342,16 @@ fdel() {
 
 fupgrade() {
     local OPTS="$@"
-        local user=""
+    local user=""
     local pk=""
         
-        for a in $OPTS; do
-                case "$a" in
+    for a in $OPTS; do
+        case "$a" in
             fupgrade) ;;
-                    -u | --user) user="--user " ;;
-                    *) usage;;
+            -u | --user) user="--user ";;
+            *) usage;;
         esac
-        done
+    done
 
     _run_sudo "flatpak ${user}--force-remove update" $user
 }
@@ -369,17 +363,17 @@ finfo() {
 flist() {
 
     local OPTS="$@"
-        local installed=""
+    local installed=""
     local simple=""
     local user=""
         
-        for a in $OPTS; do
-                case "$a" in
+    for a in $OPTS; do
+        case "$a" in
             flist) ;;
             -u | --user) user="--user ";;
-                    -i | --installed) installed="yes";;
+            -i | --installed) installed="yes";;
             -s | --simple) simple="yes";;
-                    *) usage;;
+            *) usage;;
         esac
     done
     
@@ -403,15 +397,17 @@ frepoadd() {
     local user=""
 
     for a in $OPTS; do
-            case "$a" in
+        case "$a" in
             frepoadd) ;;
             -u|--user) user="--user ";;
-                    flathub) repo="flathub";;
-            *) echo "ERROR: Unknown repo '$a', currently availabile: flathub" ;;
+            flathub) repo="flathub";;
+            *) echo "ERROR: Unknown repo '$a', currently availabile: flathub";;
         esac
     done
     case "$repo" in
-        flathub) echo "Installing $repo ..."; flatpak remote-add ${user}--if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo ;;
+        flathub) echo "Installing $repo ..."; \
+            flatpak remote-add ${user}--if-not-exists flathub \
+            https://dl.flathub.org/repo/flathub.flatpakrepo;;
     esac
 }
 
@@ -421,15 +417,15 @@ frepodel() {
     local user=""
 
     for a in $OPTS; do
-            case "$a" in
+        case "$a" in
             frepoadd) ;;
             -u|--user) user="--user ";;
-                    flathub) repo="flathub";;
-            *) echo "ERROR: Unknown repo '$a', currently availabile: flathub" ;;
+            flathub) repo="flathub";;
+            *) echo "ERROR: Unknown repo '$a', currently availabile: flathub";;
         esac
     done
     case "$repo" in
-        flathub) echo "Removing $repo ..."; flatpak remote-delete ${user}flathub ;;
+        flathub) echo "Removing $repo ..."; flatpak remote-delete ${user}flathub;;
     esac
 }
 
@@ -441,31 +437,31 @@ main_command="$1"
 all_commands="$@"
 
 case "$main_command" in
-    add|install) add "$all_commands";;
-    search|find) search "$all_commands";;
+    add|install)    add "$all_commands";;
+    search|find)    search "$all_commands";;
     upgrade|update) upgrade;;
-    checkupd) checkupd ;;
-    show|info) info "$2";;
-    files) files "$2";;
-    del|remove) del "$all_commands";;
-    list) list;;
-    clean) clean;;
-    repoadd) repoadd "$all_commands";;
-    repodel) repodel "$all_commands";;
-    repolist) repolist "$all_commands";;
+    checkupd)       checkupd;;
+    show|info)      info "$2";;
+    files)          files "$2";;
+    del|remove)     del "$all_commands";;
+    list)           list;;
+    clean)          clean;;
+    repoadd)        repoadd "$all_commands";;
+    repodel)        repodel "$all_commands";;
+    repolist)       repolist "$all_commands";;
     
-    son|senable) son "$2";;
-    soff|sdisable) soff "$2";;
-    slist) slist;;
+    son|senable)    son "$2";;
+    soff|sdisable)  soff "$2";;
+    slist)          slist;;
 
-    fsearch) fsearch "$all_commands";;  
-    fadd) fadd "$all_commands";;
-    fdel) fdel "$all_commands";;
-    fupgrade) fupgrade "$all_commands";;
-    finfo) finfo "$2";;
-    flist) flist "$all_commands";;
-    frepoadd) frepoadd "$all_commands";;
-    frepodel) frepodel "$all_commands";;
+    fsearch)        fsearch "$all_commands";;  
+    fadd)           fadd "$all_commands";;
+    fdel)           fdel "$all_commands";;
+    fupgrade)       fupgrade "$all_commands";;
+    finfo)          finfo "$2";;
+    flist)          flist "$all_commands";;
+    frepoadd)       frepoadd "$all_commands";;
+    frepodel)       frepodel "$all_commands";;
 
-    *) usage; exit 1;;
+    *) upgrade;;
 esac
