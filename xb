@@ -436,6 +436,11 @@ frepodel() {
 main_command="$1"
 all_commands="$@"
 
+if [ $# -eq 0 ]; then
+    upgrade
+    exit
+fi
+
 case "$main_command" in
     add|install)    add "$all_commands";;
     search|find)    search "$all_commands";;
@@ -463,5 +468,7 @@ case "$main_command" in
     frepoadd)       frepoadd "$all_commands";;
     frepodel)       frepodel "$all_commands";;
 
-    *) upgrade;;
+    -h | --help | help) \
+                    usage;;
+    *)              search "$all_commands";;
 esac
