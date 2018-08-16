@@ -30,7 +30,7 @@ $ git clone https://github.com/ernierasta/xb && cd xb
 $ sudo cp xb /usr/local/bin/
 $ sudo cp complete/xb /usr/share/bash-completion/completions/
 ```
-Optionally you can make aliases, to use **x** as alias:
+Optionally you can make aliases, to use **x** as alias ('bash-completion' **must** be installed for '_completion_loader' command:
 ```shell
 $ # command below will add alias to .bash_aliases if exist, otherwise to .bashrc
 $ [ -f ~/.bash_aliases ] && echo -e "alias x='sudo xb'\n_completion_loader xb\ncomplete -o bashdefault -o default -o nospace -F _xb x" >> ~/.bash_aliases || echo -e "alias x='sudo xb'\n_completion_loader xb\ncomplete -o bashdefault -o default -o nospace -F _xb x" >> ~/.bashrc
